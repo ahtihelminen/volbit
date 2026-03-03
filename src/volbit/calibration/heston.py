@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
-import pandas as pd 
+import pandas as pd
 from scipy.optimize import minimize
 
 
