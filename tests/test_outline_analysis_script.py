@@ -7,7 +7,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from volbit.calibration.heston import HestonParameters
+from volbit.calibration.heston import HestonCalibrator, HestonParameters
+from volbit.simulation.heston import simulate_heston
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "outline_analysis.py"
 SPEC = importlib.util.spec_from_file_location("outline_analysis", SCRIPT_PATH)
@@ -169,3 +170,38 @@ def test_prepare_market_frame_coerces_string_prices_to_numeric() -> None:
 
     normalized = MODULE._prepare_market_frame(raw)
     assert normalized["close"].dtype.kind in {"f", "i"}
+
+
+def test_annualized_variance_params_preserve_return_scale() -> None:
+    rng = np.random.default_rng(12)
+    empirical = pd.Series(rng.normal(0.0, 0.01, size=1_000), name="returns")
+    base = HestonCalibrator().calibrate(empirical)
+    annualized = MODULE._annualize_variance_params(base, n_steps_per_year=252)
+
+    prices, _ = simulate_heston(
+        params=annualized,
+        T=len(empirical) / 252,
+        n_steps=len(empirical),
+        n_sims=3_000,
+        seed=42,
+    )
+    simulated = MODULE._compute_simulated_returns(prices)
+
+    ratio = float(np.std(simulated) / np.std(empirical.to_numpy()))
+    assert 0.8 <= ratio <= 1.2
+
+
+def test_tune_xi_from_stylized_facts_raises_xi_for_heavy_tails() -> None:
+    rng = np.random.default_rng(123)
+    empirical = pd.Series(rng.standard_t(df=3, size=800) * 0.01, name="returns")
+    base = HestonCalibrator().calibrate(empirical)
+    annualized = MODULE._annualize_variance_params(base, n_steps_per_year=252)
+
+    tuned = MODULE._tune_xi_from_stylized_facts(
+        annualized,
+        empirical_returns=empirical.to_numpy(),
+        n_steps_per_year=252,
+        seed=9,
+    )
+
+    assert tuned.xi >= annualized.xi
