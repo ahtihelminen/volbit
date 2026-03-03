@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
+import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from scipy.optimize import minimize
 
 
@@ -61,7 +63,7 @@ class HestonCalibrator:
         rho_init = -0.5
         v0_init = var_r
 
-        initial_guess = [kappa_init, theta_init, xi_init, rho_init, v0_init]
+        initial_guess = np.array([kappa_init, theta_init, xi_init, rho_init, v0_init])
 
         # Constraints
         # kappa > 0, theta > 0, xi > 0, -1 <= rho <= 1, v0 > 0
@@ -80,7 +82,7 @@ class HestonCalibrator:
         # REAL IMPLEMENTATION WOULD GO HERE.
         # For now, we return the initial guess optimized slightly to show scipy usage.
 
-        def objective(params: list[float]) -> float:
+        def objective(params: NDArray[np.float64]) -> float:
             k, th, x, r, v = params
             # Dummy penalty for Feller condition violation: 2*k*th > x^2
             feller_penalty = 0.0
@@ -91,7 +93,7 @@ class HestonCalibrator:
             model_var = th  # approx
             error_var = (model_var - var_r) ** 2
 
-            return error_var + feller_penalty
+            return float(error_var + feller_penalty)
 
         result = minimize(objective, initial_guess, bounds=bounds, method="L-BFGS-B")
 
