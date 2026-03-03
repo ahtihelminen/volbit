@@ -28,3 +28,4 @@ For every feature or fix, follow this branching strategy:
 2. **Implement:** Follow the TDD workflow (Section 2) and make small, meaningful commits.
 3. **Verify:** Run the Mandatory Quality Gates (Section 3).
 4. **Pull Request:** Push the branch, create a PR, review the changes, merge the PR into `main`, and delete the feature branch.
+5. **Issue Status:** Keep the issue status updated, i.e. once you start implementing them, move the status to 'In Progress' and once implemented and merged to main, to 'Done'
