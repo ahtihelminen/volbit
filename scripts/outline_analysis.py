@@ -254,6 +254,85 @@ def _load_empirical_returns(
     return returns.rename("returns")
 
 
+def _annualize_variance_params(
+    params: HestonParameters, n_steps_per_year: int
+) -> HestonParameters:
+    if n_steps_per_year <= 0:
+        raise ValueError("n_steps_per_year must be positive.")
+    scale = float(n_steps_per_year)
+    return HestonParameters(
+        kappa=params.kappa,
+        theta=params.theta * scale,
+        xi=params.xi,
+        rho=params.rho,
+        v0=params.v0 * scale,
+    )
+
+
+def _compute_simulated_returns(prices: np.ndarray, max_paths: int = 200) -> np.ndarray:
+    if prices.ndim != 2:
+        raise ValueError("prices must be a 2D array with shape (steps+1, sims).")
+    if max_paths <= 0:
+        raise ValueError("max_paths must be positive.")
+    n_paths = min(max_paths, prices.shape[1])
+    returns_by_path = np.diff(np.log(prices[:, :n_paths]), axis=0)
+    return returns_by_path.reshape(-1, order="F")
+
+
+def _tune_xi_from_stylized_facts(
+    params: HestonParameters,
+    empirical_returns: np.ndarray,
+    n_steps_per_year: int,
+    seed: int,
+) -> HestonParameters:
+    xi_cap = float(np.sqrt(max(2.0 * params.kappa * params.theta, 1e-8)) * 0.98)
+    if xi_cap <= 0.02:
+        return params
+
+    n_steps = max(len(empirical_returns), 2)
+    horizon_years = n_steps / float(n_steps_per_year)
+    n_sims = 1_500
+    candidates = np.linspace(max(params.xi, 0.05), xi_cap, num=8)
+    best = params
+    best_score = float("inf")
+    for i, xi in enumerate(candidates):
+        trial = HestonParameters(
+            kappa=params.kappa,
+            theta=params.theta,
+            xi=float(xi),
+            rho=params.rho,
+            v0=params.v0,
+        )
+        prices, _ = simulate_heston(
+            params=trial,
+            T=horizon_years,
+            n_steps=n_steps,
+            n_sims=n_sims,
+            seed=seed + 10_000 + i,
+            S0=100.0,
+            mu=0.0,
+        )
+        simulated_returns = _compute_simulated_returns(prices, max_paths=120)
+        summary = compare_stylized_facts(
+            empirical_returns=empirical_returns,
+            simulated_returns=simulated_returns,
+            lags=min(40, len(empirical_returns) - 1, len(simulated_returns) - 1),
+        )
+        kurt_diff = float(
+            summary.loc[summary["metric"] == "excess_kurtosis", "abs_diff"].iloc[0]
+        )
+        acf_diff = float(
+            summary.loc[
+                summary["metric"] == "volatility_clustering_acf_lag1", "abs_diff"
+            ].iloc[0]
+        )
+        score = kurt_diff + 5.0 * acf_diff
+        if score < best_score:
+            best = trial
+            best_score = score
+    return best
+
+
 def _plot_return_distribution(
     empirical_returns: np.ndarray,
     simulated_returns: np.ndarray,
@@ -365,7 +444,16 @@ def run_outline_analysis(config: OutlineAnalysisConfig) -> None:
     empirical_returns = empirical_returns_series.to_numpy(dtype=float)
 
     calibrator = HestonCalibrator()
-    params = calibrator.calibrate(empirical_returns_series)
+    params = _annualize_variance_params(
+        calibrator.calibrate(empirical_returns_series),
+        n_steps_per_year=config.n_steps_per_year,
+    )
+    params = _tune_xi_from_stylized_facts(
+        params,
+        empirical_returns=empirical_returns,
+        n_steps_per_year=config.n_steps_per_year,
+        seed=config.seed,
+    )
 
     n_steps = max(len(empirical_returns), 2)
     horizon_years = n_steps / config.n_steps_per_year
@@ -380,7 +468,7 @@ def run_outline_analysis(config: OutlineAnalysisConfig) -> None:
         mu=config.rate,
     )
 
-    simulated_returns = np.diff(np.log(prices[:, 0]))
+    simulated_returns = _compute_simulated_returns(prices)
     feller_stats = analyze_feller_and_zero_hits(
         params=params,
         variance_paths=variance_paths,
