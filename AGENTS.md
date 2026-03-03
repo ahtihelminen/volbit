@@ -21,11 +21,18 @@ Before you declare a task "complete" or stop your generation loop, you must run 
 * **Type Checking:** Run `mypy src/`. There must be zero type errors. Ensure all new functions have strict Python 3.11+ type hints.
 * **Linting & Formatting:** Run `ruff check src/ tests/ --fix` and `ruff format src/ tests/`. 
 
-## 4. GitHub Workflow
-For every feature or fix, follow this branching strategy:
+## 4. GitHub Workflow (CRITICAL: DO NOT SKIP)
+**You are NOT done until the code is merged and the issue is closed.**
 
-1. **Branch:** Create a new branch from `main` with a descriptive name (e.g., `feat/add-model`, `fix/typo`).
-2. **Implement:** Follow the TDD workflow (Section 2) and make small, meaningful commits.
-3. **Verify:** Run the Mandatory Quality Gates (Section 3).
-4. **Pull Request:** Push the branch, create a PR, review the changes, merge the PR into `main`, and delete the feature branch.
-5. **Issue Status:** Keep the issue status updated, i.e. once you start implementing them, move the status to 'In Progress' and once implemented and merged to main, to 'Done'
+For every feature or fix, you **MUST** follow this exact sequence:
+
+1.  **Branch:** Create a new branch from `main` with a descriptive name (e.g., `feat/add-model`, `fix/typo`).
+2.  **Implement:** Follow the TDD workflow (Section 2) and make small, meaningful commits.
+3.  **Verify:** Run the Mandatory Quality Gates (Section 3).
+4.  **Pull Request:**
+    *   Push the branch: `git push origin <branch-name>`
+    *   Create a PR: `gh pr create --title "..." --body "..." --head <branch-name> --base main`
+    *   Merge the PR: `gh pr merge <pr-number> --merge --delete-branch`
+5.  **Issue Status:**
+    *   **Start:** Move issue to 'In Progress' (if applicable).
+    *   **Finish:** Close the issue using `gh issue close <issue-number>`.
