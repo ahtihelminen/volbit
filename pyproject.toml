@@ -5,6 +5,8 @@ description = "Stochastic Volatility Dynamics in Bitcoin via Coupled Langevin Eq
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "kagglehub>=0.3.0",
+    "matplotlib>=3.10.0",
     "mypy>=1.19.1",
     "numpy>=2.4.2",
     "pandas>=3.0.1",
