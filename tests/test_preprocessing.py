@@ -11,7 +11,7 @@ from volbit.data.preprocessing import (
 
 @pytest.fixture
 def sample_df():
-    dates = pd.date_range(start="2023-01-01", periods=10, freq="H")
+    dates = pd.date_range(start="2023-01-01", periods=10, freq="h")
     prices = [100.0, 101.0, 100.5, 102.0, 103.0, 102.5, 104.0, 103.5, 105.0, 106.0]
     return pd.DataFrame({"close": prices}, index=dates)
 
