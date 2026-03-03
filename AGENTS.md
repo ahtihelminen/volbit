@@ -18,7 +18,7 @@ For every task, issue, or feature request, you must execute the following loop:
 Before you declare a task "complete" or stop your generation loop, you must run and pass the following three checks. **Do not ask for permission to run these; execute them automatically.**
 
 * **Testing:** Run `pytest tests/`. All tests must pass.
-* **Type Checking:** Run `mypy src/`. There must be zero type errors. Ensure all new functions have strict Python 3.11+ type hints.
+* **Type Checking:** Run `mypy src/`. There must be zero type errors. Ensure all new functions have strict Python 3.11+ type hints. Do not add ignore flags to type erros.
 * **Linting & Formatting:** Run `ruff check src/ tests/ --fix` and `ruff format src/ tests/`. 
 
 ## 4. GitHub Workflow (CRITICAL: DO NOT SKIP)
