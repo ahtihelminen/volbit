@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import cast
 
 import numpy as np
-import pandas as pd  # noqa: TC002
+import pandas as pd
 
 
 def calculate_log_returns(df: pd.DataFrame, price_col: str = "close") -> pd.Series:
