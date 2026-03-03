@@ -38,3 +38,15 @@ For every feature or fix, you **MUST** follow this exact sequence:
 5.  **Issue Status:**
     *   **Start:** Move issue to 'In Progress' (if applicable).
     *   **Finish:** Close the issue using `gh issue close <issue-number>`.
+
+## 5. Completion Gate (Do Not End Early)
+Before ending your turn, run this checklist and only stop if **all** are true:
+
+- [ ] All planned TODO items are checked complete.
+- [ ] Milestone/assigned issues are fully implemented and closed (`gh issue list ...` returns none remaining in scope).
+- [ ] Required quality gates have passed on the final code (`pytest`, `mypy`, `ruff check`, `ruff format` as applicable).
+- [ ] Required deliverables/files for the task exist and are committed (e.g., requested report files).
+- [ ] Required PRs are created, merged, and remote branches cleaned up when requested by workflow.
+
+If any item is not complete, continue working automatically.
+Only stop early when truly blocked, and explicitly report the blocker.
