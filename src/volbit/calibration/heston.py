@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
-import pandas as pd  # noqa: TC002
-from scipy.optimize import minimize  # type: ignore
+import pandas as pd 
+from scipy.optimize import minimize
 
 
 @dataclass

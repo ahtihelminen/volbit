@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from volbit.calibration.heston import HestonParameters  # noqa: TC001
+from volbit.calibration.heston import HestonParameters
 
 
 def simulate_heston(
