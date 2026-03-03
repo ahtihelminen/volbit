@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+from volbit.experiments.runner import load_experiment_config, run_experiment
+
 
 def cli(args: list[str] | None = None) -> int:
     """
@@ -23,12 +25,16 @@ def cli(args: list[str] | None = None) -> int:
 
     # Example command: run-experiment
     parser_run = subparsers.add_parser("run", help="Run an experiment")
-    parser_run.add_argument("--config", help="Path to configuration file")
+    parser_run.add_argument(
+        "--config", required=True, help="Path to configuration file"
+    )
 
     parsed_args = parser.parse_args(args) if args is not None else parser.parse_args()
 
     if parsed_args.command == "run":
-        print(f"Running experiment with config: {parsed_args.config}")
+        config = load_experiment_config(parsed_args.config)
+        run_dir = run_experiment(config)
+        print(f"Experiment complete. Artifacts: {run_dir}")
     else:
         parser.print_help()
 
