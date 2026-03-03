@@ -1,4 +1,4 @@
-# Project Proposal: Stochastic Volatility Dynamics in Bitcoin via Coupled Langevin Equations
+# Stochastic Volatility Dynamics in Bitcoin via Coupled Langevin Equations
 
 ## 1. Introduction & Research Question
 Standard financial models, such as Black-Scholes, assume that market volatility is a constant. This fails to account for "fat tails" (extreme events) and "volatility clustering" observed in highly speculative assets like Bitcoin. This project maps the physics of **Brownian motion in a potential** to the movement of financial markets.

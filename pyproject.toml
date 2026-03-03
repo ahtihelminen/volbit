@@ -1,5 +1,5 @@
 [project]
-name = "project"
+name = "volbit"
 version = "0.1.0"
 description = "Stochastic Volatility Dynamics in Bitcoin via Coupled Langevin Equations"
 readme = "README.md"
