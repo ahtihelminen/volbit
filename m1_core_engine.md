@@ -65,5 +65,10 @@ mypy src tests
 ruff check src tests
 ```
 
+## GitHub Workflow Status
+- **Pull Requests:** All features merged via PR (e.g., PR #15 for diagnostics).
+- **Issues:** All milestone issues (#1-#6) are closed.
+- **Branching:** Feature branches used throughout; `main` protected.
+
 ## Conclusion
 The core engine is now operationally ready for research tasks, capable of loading market data, calibrating parameters, and generating Monte Carlo simulations with stability guarantees.
