@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import sys
 
@@ -5,10 +7,10 @@ import sys
 def cli(args: list[str] | None = None) -> int:
     """
     Main CLI entry point for volbit.
-    
+
     Args:
         args: Command line arguments. If None, uses sys.argv[1:].
-        
+
     Returns:
         Exit code (0 for success).
     """
@@ -31,6 +33,7 @@ def cli(args: list[str] | None = None) -> int:
         parser.print_help()
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(cli())
