@@ -25,7 +25,9 @@ def cli(args: list[str] | None = None) -> int:
 
     # Example command: run-experiment
     parser_run = subparsers.add_parser("run", help="Run an experiment")
-    parser_run.add_argument("--config", required=True, help="Path to configuration file")
+    parser_run.add_argument(
+        "--config", required=True, help="Path to configuration file"
+    )
 
     parsed_args = parser.parse_args(args) if args is not None else parser.parse_args()
 
